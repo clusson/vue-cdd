@@ -38,6 +38,9 @@
       text-decoration: none;
     }
 
+#error{
+  color:red;
+}
     section,
     footer,
     header,
@@ -69,7 +72,9 @@
         <input class="form-control" type="date" v-model=endDate id="example-date-input">
       </div>
     </div>
-
+    <div>
+      <label class="col-8 col-form-label" id="error">{{ errorMessage }}</label>
+    </div>
     <button type="button" class="btn btn-secondary" @click="getDuration()">Calculer</button>
     <div>
       <label for="example-date-input" class="col-8 col-form-label" v-model='duration'>Durée du contrat en jours
@@ -83,9 +88,7 @@
     <div>
       <label class="col-4 col-form-label">Nombre de congés acquis : {{ nb_holidays }}</label>
     </div>
-    <div>
-      <label class="col-4 col-form-label">{{ errorMessage }}</label>
-    </div>
+
   </form>
   <!-- IMPORT VUE JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
@@ -121,9 +124,9 @@
           const start = moment(this.startDate)
           const end = moment(this.endDate)
           console.log(start.format('YYYY'))
-          if (end >= start && end.format('YYYY') - start.format('YYYY') == 0) {
+          if (end > start && end.format('YYYY') - start.format('YYYY') == 0) {
             let duration = moment.duration(end.diff(start)).asDays();
-            let hours = moment.duration(end.diff(start, 'week')) * 7
+            let hours = duration * 7
             this.getHolidays(duration)
             this.getETP(hours)
             return this.duration = Math.round(duration) + ' jours, soit ' + Math.round(hours) + ' heures.'
