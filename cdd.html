@@ -5,50 +5,40 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vue.js Order Form</title>
+  <title>Calcul CDD</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+    crossorigin="anonymous"></script>
+  <!-- IMPORT BOOTSTRAP -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+    crossorigin="anonymous">
+  <!-- IMPORT VUE JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
+  <!-- IMPORT MOMENT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
   <style>
-    @import url(https://fonts.googleapis.com/css?family=Cookie);
-
-    /* Hide un-compiled mustache bindings
-    until the Vue instance is ready */
-
-    [v-cloak] {
-      display: none;
-    }
-
     * {
       margin: 0;
       padding: 0;
     }
-
     body {
       font: 15px/1.3 'Open Sans', sans-serif;
       color: #5e5b64;
       text-align: center;
     }
-
-    a,
-    a:visited {
-      outline: none;
-      color: #389dc1;
+  
+    .row {
+      margin-top: 20px;
     }
-
-    a:hover {
-      text-decoration: none;
+ 
+    .title {
+      font-size: 2em;
+      margin: 100px auto;
     }
-
-    section,
-    footer,
-    header,
-    aside,
-    nav {
-      display: block;
-    }
-
-    /*-------------------------
-    	The order form
-    --------------------------*/
   </style>
 
 </head>
@@ -57,91 +47,92 @@
 
   <!-- v-cloak hides any un-compiled data bindings until the Vue instance is ready. -->
 
-  <form id="main" v-cloak>
-    <div class="form-group row">
-      <label for="example-date-input" class="col-2 col-form-label">Date de début</label>
-      <div class="col-4">
-        <input class="form-control" type="date" v-model=startDate id="example-date-input">
+  <div id="main">
+    <div class="container">
+      <h1>Calcul de votre CDD</h1>
+      <div class="row ">
+        <div class="col-md-6">
+          <form>
+            <div class="form">
+              <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Début du contrat</label>
+                <input class=" col-sm-8 col-md-6 form-control form-control-lg" v-model="start" type="date">
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-4 col-form-label">jusqu'au</label>
+                <input class="col-sm-8 col-md-6 form-control form-control-lg" v-model="end" type="date">
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-md-5 offset-md-1 ">
+          <div v-if="days < year">
+            <div class="card">
+              <h5 class="card-header">Infos</h5>
+              <div class="card-body">
+                <p>Contrat du <b>{{start | formatedDate}}</b> au <b>{{end | formatedDate}}</b></p>
+                <p>Nombre de jours: {{days}} </p>
+                <p>Nombre d'heure: {{hours}} </p>
+                <p>Nombre de congés: {{holidays}} </p>
+                <p>Nombre de etp: {{etp}} </p>
+              </div>
+            </div>
+
+          </div>
+          <div v-else>
+            <div class="alert alert-warning">
+              {{errorMessage}}
+            </div>
+          </div>
+        </div>
       </div>
-
-      <label for="example-date-input" class="col-2 col-form-label">Date de fin</label>
-      <div class="col-4">
-        <input class="form-control" type="date" v-model=endDate id="example-date-input">
-      </div>
     </div>
-
-    <button type="button" class="btn btn-secondary" @click="getDuration()">Calculer</button>
-    <div>
-      <label for="example-date-input" class="col-8 col-form-label" v-model='duration'>Durée du contrat en jours
-        et en
-        heures : {{
-        duration }}</label>
-    </div>
-    <div>
-      <label class="col-4 col-form-label">ETP : {{ etp }} </label>
-    </div>
-    <div>
-      <label class="col-4 col-form-label">Nombre de congés acquis : {{ nb_holidays }}</label>
-    </div>
-    <div>
-      <label class="col-4 col-form-label">{{ errorMessage }}</label>
-    </div>
-  </form>
-  <!-- IMPORT VUE JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
-  <!-- IMPORT BOOTSTRAP -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-    crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-    crossorigin="anonymous"></script>
-  <!-- IMPORT MOMENT -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-
-
-
+  </div>
   <script>
 
+    Vue.filter('formatedDate', function (value) {
+      return moment().format("DD-MM-YYYY");
+    });
 
-    var demo = new Vue({
+    var app = new Vue({
       el: '#main',
       data: {
-        duration: '',
-        errorMessage: '',
-        etp: '',
-        nb_holidays: '',
-        startDate: moment().format('YYYY-MM-DD'),
-        endDate: moment().format('YYYY-MM-DD'),
+        hour: 35,
+        year: 365,
+        start: moment().format('YYYY-MM-DD'),
+        end: moment().format('YYYY-MM-DD'),
+        errorMessage: 'Attention, le contrat ne peut pas dépasser 1 an'
       },
       methods: {
-        getDuration() {
-          const start = moment(this.startDate)
-          const end = moment(this.endDate)
-          console.log(start.format('YYYY'))
-          if (end >= start && end.format('YYYY') - start.format('YYYY') == 0) {
-            let duration = moment.duration(end.diff(start)).asDays();
-            let hours = moment.duration(end.diff(start, 'week')) * 7
-            this.getHolidays(duration)
-            this.getETP(hours)
-            return this.duration = Math.round(duration) + ' jours, soit ' + Math.round(hours) + ' heures.'
-          }
-          else {
-            this.errorMessage = 'Attention, les dates ne sont pas correctes'
-          }
-        },
-        getETP(hours) {
-          return this.etp = Math.round(hours) / 35
-        },
-        getHolidays(duration) {
-          let days = duration / 28
-          return this.nb_holidays = Math.floor(days * 2.08)
-        }
       },
-      watch: {
-
+      computed: {
+        days: function () {
+          const start = moment(this.start)
+          const end = moment(this.end)
+          return end.diff(start, 'day')
+        },
+        openedDays: function () {
+          const start = moment(this.start)
+          const end = moment(this.end)
+          return ((end.diff(start, 'week') - 1) * 5) + end.day()
+        },
+        hours: function () {
+          const start = moment(this.start)
+          const end = moment(this.end)
+          return end.diff(start, 'week') * this.hour
+        },
+        holidays: function () {
+          const format = Math.floor(this.days / 28) * 2.08;
+          const result = Math.ceil(format)
+          if (result > 25)
+            return 25
+          return result
+        },
+        etp: function () {
+          const formatedEtp = this.hour / 35
+          return formatedEtp.toFixed(1);
+        }
       }
     });
 
