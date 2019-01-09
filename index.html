@@ -19,6 +19,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
   <!-- IMPORT MOMENT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/locale/fr.js"></script>
 
   <style>
     * {
@@ -92,7 +93,7 @@
   <script>
 
     Vue.filter('formatedDate', function (value) {
-      return moment().format("DD-MM-YYYY");
+      return moment().format("Do MMMM YYYY");
     });
 
     var app = new Vue({
