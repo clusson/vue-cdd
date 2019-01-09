@@ -125,7 +125,7 @@
       computed: {
         days: function () {
           const start = moment(this.start)
-          const end = moment(this.end).add('days', 1)
+          const end = moment(this.end).add(1, 'days')
           if (end < start + 1) {
             return this.errorMessage = "Attention, vous avez une erreur sur vos dates."
           } else if (!this.end || !this.start) {
