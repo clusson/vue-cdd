@@ -123,7 +123,7 @@
           const start = moment(this.start)
           const end = moment(this.end).add('days', 1)
           if (end < start + 1) {
-            return this.errorMessage = "Attention, la date de fin du contrat est inférieure à la date de début"
+            return this.errorMessage = "Attention, vous avez une erreur sur vos dates."
           } else if (!this.end || !this.start) {
             return this.errorMessage = "Attention, vous devez fournir les deux dates."
           }
