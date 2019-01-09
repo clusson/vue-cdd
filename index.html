@@ -115,6 +115,11 @@
         days: function () {
           const start = moment(this.start)
           const end = moment(this.end)
+          if (end < start) {
+            return this.errorMessage = "Attention, la date de fin du contrat est inférieure à la date de début"
+          } else if (!this.end || !this.start) {
+            return this.errorMessage = "Attention, vous devez fournir les deux dates."
+          }
           return end.diff(start, 'day')
         },
         openedDays: function () {
@@ -138,6 +143,9 @@
           const formatedEtp = this.hours / 35
           return formatedEtp.toFixed(1);
         }
+      },
+      watch: {
+
       }
     });
 
