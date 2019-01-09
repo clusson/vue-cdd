@@ -22,6 +22,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/locale/fr.js"></script>
 
   <style>
+
+    [v-cloak] {
+			display: none;
+		}
     * {
       margin: 0;
       padding: 0;
@@ -37,8 +41,11 @@
     }
  
     .title {
-      font-size: 2em;
-      margin: 100px auto;
+      margin: 40px auto;
+    }
+
+    .input{
+      text-align:left;
     }
   </style>
 
@@ -48,23 +55,23 @@
 
   <!-- v-cloak hides any un-compiled data bindings until the Vue instance is ready. -->
 
-  <div id="main">
+  <div id="main" v-cloak>
     <div class="container">
-      <h1>Calcul de votre CDD</h1>
-      <div class="row ">
+      <h1 class="title">Calculer votre CDD</h1>
+      <div class="row">
         <div class="col-md-6">
           <form>
             <div class="form">
               <div class="form-group row">
-                <label class="col-sm-4 col-form-label">Début du contrat</label>
+                <label class="col-sm-4 col-form-label input">Début du contrat</label>
                 <input class=" col-sm-8 col-md-6 form-control form-control-lg" v-model="start" type="date">
               </div>
               <div class="form-group row">
-                <label class="col-sm-4 col-form-label">jusqu'au</label>
+                <label class="col-sm-4 col-form-label input">jusqu'au</label>
                 <input class="col-sm-8 col-md-6 form-control form-control-lg" v-model="end" type="date">
               </div>
               <div class="form-group row">
-                <label class="col-sm-4 col-form-label">Nombre d'heure hebdomadaire</label>
+                <label class="col-sm-4 col-form-label input">Nombre d'heure hebdomadaire</label>
                 <input class="col-sm-8 col-md-6 form-control form-control-lg" v-model="hour" type="number">
               </div>
             </div>
@@ -77,10 +84,10 @@
               <h5 class="card-header">Infos</h5>
               <div class="card-body">
                 <p>Contrat du <b>{{start | formatedDate}}</b> au <b>{{end | formatedDate}}</b></p>
-                <p>Nombre de jours: {{days}} </p>
-                <p>Nombre d'heure: {{hours}} </p>
-                <p>Nombre de congés: {{holidays}} </p>
-                <p>Nombre de etp: {{etp}} </p>
+                <p>Nombre de jours travaillés <b>{{days}}</b> </p>
+                <p>Nombre d'heures réalisées <b>{{hours}}</b> </p>
+                <p>Nombre de congés acquis <b>{{holidays}}</b> </p>
+                <p>Equivalent temps plein <b>{{etp}}</b> </p>
               </div>
             </div>
 
@@ -104,7 +111,7 @@
       el: '#main',
       data: {
         hour: 35,
-        year: 365,
+        year: 366,
         start: moment().format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
         errorMessage: 'Attention, le contrat ne peut pas dépasser 1 an'
@@ -114,23 +121,23 @@
       computed: {
         days: function () {
           const start = moment(this.start)
-          const end = moment(this.end)
-          if (end < start) {
+          const end = moment(this.end).add('days', 1)
+          if (end < start + 1) {
             return this.errorMessage = "Attention, la date de fin du contrat est inférieure à la date de début"
           } else if (!this.end || !this.start) {
             return this.errorMessage = "Attention, vous devez fournir les deux dates."
           }
           return end.diff(start, 'day')
         },
-        openedDays: function () {
-          const start = moment(this.start)
-          const end = moment(this.end)
-          return ((end.diff(start, 'week') - 1) * 5) + end.day()
-        },
         hours: function () {
           const start = moment(this.start)
           const end = moment(this.end)
-          return end.diff(start, 'week') * this.hour
+          const week = end.diff(start, 'week') + 1
+          if (week >= 1) {
+            return week * this.hour
+          }
+          return this.hour
+
         },
         holidays: function () {
           const format = Math.floor(this.days / 28) * 2.08;
@@ -141,7 +148,7 @@
         },
         etp: function () {
           const formatedEtp = this.hours / 35
-          return formatedEtp.toFixed(1);
+          return formatedEtp.toFixed(2);
         }
       },
       watch: {
