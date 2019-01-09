@@ -63,6 +63,10 @@
                 <label class="col-sm-4 col-form-label">jusqu'au</label>
                 <input class="col-sm-8 col-md-6 form-control form-control-lg" v-model="end" type="date">
               </div>
+              <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Nombre d'heure hebdomadaire</label>
+                <input class="col-sm-8 col-md-6 form-control form-control-lg" v-model="hour" type="number">
+              </div>
             </div>
           </form>
         </div>
@@ -131,7 +135,7 @@
           return result
         },
         etp: function () {
-          const formatedEtp = this.hour / 35
+          const formatedEtp = this.hours / 35
           return formatedEtp.toFixed(1);
         }
       }
