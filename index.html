@@ -76,7 +76,7 @@
               </div>
               <div class="form-group row">
                 <label class="col-sm-4 col-form-label input">Horaire hebdomadaire</label>
-                <input class="col-sm-8 col-md-6 form-control form-control-lg" v-model="hour" type="number">
+                <input class="col-sm-8 col-md-6 form-control form-control-lg" v-model="dailyHours" type="number">
               </div>
             </div>
           </form>
@@ -87,7 +87,7 @@
             <div class="card">
               <h5 class="card-header">Infos</h5>
               <div class="card-body">
-                <p class="h4">Contrat du <b>{{start | formatedDate}}</b> au <b>{{end | formatedDate}}</b></p>
+                <p class="h4">Contrat du <b>{{startedDate | formatedDate}}</b> au <b>{{endedDate | formatedDate}}</b></p>
                 <p>Nombre de jours travaillés <b>{{days}}</b> </p>
                 <p>Nombre d'heures réalisées <b>{{hours}}</b> </p>
                 <p>Nombre de congés acquis <b>{{holidays}}</b> </p>
@@ -108,13 +108,14 @@
   <script>
 
     Vue.filter('formatedDate', function (value) {
-      return moment().format("Do MMMM YYYY");
+      return moment(value).format("Do MMMM YYYY");
     });
 
     var app = new Vue({
       el: '#main',
       data: {
-        hour: 35,
+        hour: 7,
+        dailyHours : 35,
         year: 366,
         start: moment().format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
@@ -123,22 +124,28 @@
       methods: {
       },
       computed: {
+        startedDate: function () {
+          return moment(this.start)
+        },
+        endedDate: function () {
+          return moment(this.end)
+        },
         days: function () {
           const start = moment(this.start)
           const end = moment(this.end).add(1, 'days')
           if (end < start + 1) {
-            return this.errorMessage = "Attention, vous avez une erreur sur vos dates."
+            return this.errorMessage = "Attention, veuillez vérifier vos dates."
           } else if (!this.end || !this.start) {
-            return this.errorMessage = "Attention, vous devez fournir les deux dates."
+            return this.errorMessage = "Attention, vous devez fournir la date de début et de fin de votre contrat."
           }
           return end.diff(start, 'day')
         },
         hours: function () {
           const start = moment(this.start)
           const end = moment(this.end)
-          const week = end.diff(start, 'week') + 1
-          if (week >= 1) {
-            return week * this.hour
+          const days = end.diff(start, 'days')
+          if (days >= 1) {
+            return (days * this.hour)
           }
           return this.hour
 
