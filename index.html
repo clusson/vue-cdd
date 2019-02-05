@@ -6,16 +6,19 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calcul CDD</title>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
     crossorigin="anonymous"></script>
   <link rel="icon" href="favicon.gif" type="image/gif" sizes="16x16">
   <!-- IMPORT BOOTSTRAP -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
     crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <!-- IMPORT VUE JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
   <!-- IMPORT MOMENT -->
@@ -25,31 +28,33 @@
   <link href="https://fonts.googleapis.com/css?family=Quicksand|Roboto+Mono" rel="stylesheet">
   <style>
     [v-cloak] {
-			display: none;
-		}
+      display: none;
+    }
+
     * {
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: 'Quicksand', sans-serif;
 
       color: #6C464E;
       text-align: center;
     }
-  
+
     .row {
       margin-top: 20px;
     }
- 
+
     .title {
       margin: 40px auto;
       color: #32A287;
       font-family: 'Roboto Mono', monospace;
     }
 
-    .input{
-      text-align:left;
+    .input {
+      text-align: left;
     }
   </style>
 
@@ -87,11 +92,13 @@
             <div class="card">
               <h5 class="card-header">Infos</h5>
               <div class="card-body">
-                <p class="h4">Contrat du <b>{{startedDate | formatedDate}}</b> au <b>{{endedDate | formatedDate}}</b></p>
+                <p class="h4">Contrat du <b>{{startedDate | formatedDate}}</b> au <b>{{endedDate | formatedDate}}</b>
+                </p>
                 <p>Nombre de jours travaillés <b>{{days}}</b> </p>
                 <p>Nombre d'heures réalisées <b>{{hours}}</b> </p>
                 <p>Nombre de congés acquis <b>{{holidays}}</b> </p>
                 <p>Equivalent temps plein <b>{{etp}}</b> </p>
+                <p>Nombre d'heures période <b>{{nbHoursToDo}}</b> </p>
               </div>
             </div>
 
@@ -115,7 +122,7 @@
       el: '#main',
       data: {
         hour: 7,
-        dailyHours : 35,
+        dailyHours: 35,
         year: 366,
         start: moment().format('YYYY-MM-DD'),
         end: moment().format('YYYY-MM-DD'),
@@ -132,23 +139,28 @@
         },
         days: function () {
           const start = moment(this.start)
-          const end = moment(this.end).add(1, 'days')
+          const end = moment(this.end).add(1, 'd')
           if (end < start + 1) {
             return this.errorMessage = "Attention, veuillez vérifier vos dates."
           } else if (!this.end || !this.start) {
             return this.errorMessage = "Attention, vous devez fournir la date de début et de fin de votre contrat."
           }
           return end.diff(start, 'day')
+
+        },
+        openedDays: function () {
+          return ((moment(this.end).diff(this.start, 'week') - 1) * 5) + moment(this.end).day()
         },
         hours: function () {
           const start = moment(this.start)
           const end = moment(this.end)
-          const days = end.diff(start, 'days')
-          if (days >= 1) {
-            return (days * this.hour)
-          }
-          return this.hour
+          const weeks = end.diff(start, 'week') + 1
 
+          if (weeks > 0) {
+            return weeks * this.dailyHours
+          }
+
+          return this.dailyHours
         },
         holidays: function () {
           const format = Math.floor(this.days / 28) * 2.08;
@@ -158,12 +170,13 @@
           return result
         },
         etp: function () {
-          const formatedEtp = this.hours / 35
-          return formatedEtp.toFixed(2);
+          return (this.dailyHours / 35).toFixed(2);
+        },
+        nbHoursToDo: function () {
+          return this.openedDays * 7 * this.etp;
         }
       },
       watch: {
-
       }
     });
 
