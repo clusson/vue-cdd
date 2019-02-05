@@ -121,7 +121,6 @@
     var app = new Vue({
       el: '#main',
       data: {
-        hour: 7,
         dailyHours: 35,
         year: 366,
         start: moment().format('YYYY-MM-DD'),
@@ -151,7 +150,7 @@
         openedDays: function () {
           const start = moment(this.start)
           const end = moment(this.end)
-          return ((end.diff(start, 'week') - 1) * 5) + end.day()
+          return ((end.diff(start, 'week') * 5) - 1) + end.day()
         },
         hours: function () {
           const start = moment(this.start)
