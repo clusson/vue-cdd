@@ -95,10 +95,10 @@
                 <p class="h4">Contrat du <b>{{startedDate | formatedDate}}</b> au <b>{{endedDate | formatedDate}}</b>
                 </p>
                 <p>Nombre de jours travaillés <b>{{days}}</b> </p>
-                <p>Nombre d'heures réalisées <b>{{hours}}</b> </p>
+                <p>Nombre d'heures sur le contrat <b>{{hours}}</b> </p>
                 <p>Nombre de congés acquis <b>{{holidays}}</b> </p>
                 <p>Equivalent temps plein <b>{{etp}}</b> </p>
-                <p>Nombre d'heures période <b>{{nbHoursToDo}}</b> </p>
+                <p>Nombre d'heures sur la période <b>{{nbHoursToDo}}</b> </p>
               </div>
             </div>
 
@@ -149,11 +149,13 @@
 
         },
         openedDays: function () {
-          return ((moment(this.end).diff(this.start, 'week') - 1) * 5) + moment(this.end).day()
+          const start = moment(this.start)
+          const end = moment(this.end)
+          return ((end.diff(start, 'week') - 1) * 5) + end.day()
         },
         hours: function () {
           const start = moment(this.start)
-          const end = moment(this.end)
+          const end = moment(this.end).add(1, 'd')
           const weeks = end.diff(start, 'week') + 1
 
           if (weeks > 0) {
@@ -170,7 +172,7 @@
           return result
         },
         etp: function () {
-          return (this.dailyHours / 35).toFixed(2);
+          return (this.dailyHours / 35).toFixed(1);
         },
         nbHoursToDo: function () {
           return this.openedDays * 7 * this.etp;
